@@ -2,6 +2,7 @@ import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import AddModel from "../components/AddModel";
 import Alert from "../components/Alert";
+import EditModel from "../components/EditModel";
 
 export default function Users() {
   const [userData, setUserData] = useState([]);
@@ -20,23 +21,48 @@ export default function Users() {
   }, []);
 
   const [showAddModel, setShowAddModel] = useState(false);
+  const [showEditModel, setShowEditModel]=useState(false)
   const [addStatus, setAddStatus] = useState(false);
+  const [deleteStatus, setDeleteStatus] = useState(false);
+  const [editStatus, setEditStatus] = useState(false);
   const handelAddResultStatus = (status) => {
     setAddStatus(status);
-    setTimeout(() => {
-        setAddStatus(false);
-    }, 1500);
+    
   };
   useEffect(() => {
     fetchData(apiLink);
-  }, [addStatus]);
+    setTimeout(() => {
+        setDeleteStatus(false);
+      }, 1500);
+      setTimeout(() => {
+        setAddStatus(false);
+      }, 1500);
+      setTimeout(() => {
+        setEditStatus(false);
+      }, 1500);
+  }, [addStatus,deleteStatus,editStatus]);
 
-  const handelDelete=(id)=>{
-    console.log("inside hande delete", id)
+  const handelDelete = (id) => {
+    Axios.delete(`https://6654c2d73c1d3b6029374b42.mockapi.io/todo/users/${id}`)
+      .then(() => setDeleteStatus(true))
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const handelEditResultStatus=(status)=>{
+    setEditStatus(status)
   }
-  const handelEdit=(id)=>{
-    console.log("inside hande edit", id)
-  }
+  const handelEdit = (id,name,email,phone,city) => {
+    const userDetail={
+      "id":id,
+      "name":name,
+      "email":email,
+      "phone":phone,
+      "city":city,
+    }
+    localStorage.setItem("userDeatils",JSON.stringify(userDetail))
+   setShowEditModel(true)
+  };
 
   return (
     <div>
@@ -60,34 +86,64 @@ export default function Users() {
         </div>
       )}
 
+{deleteStatus && (
+        <div className="max-w-[960px] mx-auto">
+          <Alert
+            msg="User is deleted"
+            alertType="delete"
+            alertClose={() => setAddStatus(false)}
+          />
+        </div>
+      )}
+      {editStatus && (
+        <div className="max-w-[960px] mx-auto">
+          <Alert
+            msg="User details edited successfully"
+            alertType="edit"
+            alertClose={() => setEditStatus(false)}
+          />
+        </div>
+      )}
+
       <table className="w-full max-w-[960px] mx-auto">
-      <thead>
-        <tr>
-          <th className="font-bold border-b px-4 py-4">Name</th>
-          <th className="font-bold border-b px-4 py-4">Email</th>
-          <th className="font-bold border-b px-4 py-4">Phone</th>
-          <th className="font-bold border-b px-4 py-4">City</th>
-          <th className="font-bold border-b px-4 py-4">Edit</th>
-          <th className="font-bold border-b px-4 py-4">Delete</th>
-        </tr>
+        <thead>
+          <tr>
+            <th className="font-bold border-b px-4 py-4 text-left">Name</th>
+            <th className="font-bold border-b px-4 py-4 text-left">Email</th>
+            <th className="font-bold border-b px-4 py-4 text-left">Phone</th>
+            <th className="font-bold border-b px-4 py-4 text-left">City</th>
+            <th className="font-bold border-b px-4 py-4 text-left">Edit</th>
+            <th className="font-bold border-b px-4 py-4 text-left">Delete</th>
+          </tr>
         </thead>
         <tbody>
-        {userData.map((item, index) => (
-          <tr key={index}>
-            <td className="border-b px-4 py-4 text-center">{item.name}</td>
-            <td className="border-b px-4 py-4 text-center">{item.email}</td>
-            <td className="border-b px-4 py-4 text-center">{item.phone}</td>
-            <td className="border-b px-4 py-4 text-center">{item.city}</td>
-            <td className="border-b px-4 py-4 text-center">
-              <button className="bg-blue-700 text-white px-3 py-2" onClick={()=>handelEdit(item.id)}>Edit</button>
-            </td>
-            <td className="border-b px-4 py-4 text-center">
-              <button className="bg-red-600 text-white px-3 py-2" onClick={()=>handelDelete(item.id)}>
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))}
+          {userData.map((item, index) => (
+            <tr key={index}>
+              <td className="border-b px-4 py-4">{item.name}</td>
+              <td className="border-b px-4 py-4">{item.email}</td>
+              <td className="border-b px-4 py-4">{item.phone}</td>
+              <td className="border-b px-4 py-4">{item.city}</td>
+              <td className="border-b px-4 py-4">
+                <button
+                  className="bg-blue-700 text-white px-3 py-2"
+                  onClick={() => handelEdit(item.id,item.name,item.email,item.phone,item.city)}
+                >
+                  Edit
+                </button>
+              </td>
+              <td className="border-b px-4 py-4 text-center">
+                <button
+                  className="bg-red-600 text-white px-3 py-2"
+                  onClick={() => {
+                    window.confirm("Are you sure you want to delete?") &&
+                      handelDelete(item.id);
+                  }}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 
@@ -95,6 +151,12 @@ export default function Users() {
         <AddModel
           onClose={() => setShowAddModel(false)}
           addResult={handelAddResultStatus}
+        />
+      )}
+      {showEditModel && (
+        <EditModel
+          onClose={() => setShowEditModel(false)}
+          editResult={handelEditResultStatus}
         />
       )}
     </div>
