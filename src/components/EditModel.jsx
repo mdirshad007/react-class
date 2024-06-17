@@ -1,5 +1,6 @@
 import Axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
+import { Zoom } from "react-awesome-reveal";
 import { IoMdClose } from "react-icons/io";
 
 export default function EditModel({ onClose,editResult}) {
@@ -50,6 +51,7 @@ export default function EditModel({ onClose,editResult}) {
       onClick={closeModel}
       className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center"
     >
+      <Zoom>
       <div className="bg-white px-8 py-10 max-w-[600px] w-full rounded-lg relative">
         <button onClick={onClose} className="absolute right-4 top-4 z-10">
           <IoMdClose className="text-2xl hover:text-red-600" />
@@ -135,6 +137,7 @@ export default function EditModel({ onClose,editResult}) {
           </button>
         </form>
       </div>
+      </Zoom>
     </div>
   );
 }

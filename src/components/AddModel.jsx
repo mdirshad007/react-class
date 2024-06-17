@@ -1,5 +1,6 @@
 import Axios from "axios";
 import React, { useRef, useState } from "react";
+import { Fade } from "react-awesome-reveal";
 import { IoMdClose } from "react-icons/io";
 
 export default function AddModel({ onClose,addResult }) {
@@ -39,6 +40,7 @@ export default function AddModel({ onClose,addResult }) {
       onClick={closeModel}
       className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center"
     >
+      <Fade cascade>
       <div className="bg-white px-8 py-10 max-w-[600px] w-full rounded-lg relative">
         <button onClick={onClose} className="absolute right-4 top-4 z-10">
           <IoMdClose className="text-2xl hover:text-red-600" />
@@ -124,6 +126,7 @@ export default function AddModel({ onClose,addResult }) {
           </button>
         </form>
       </div>
+      </Fade>
     </div>
   );
 }

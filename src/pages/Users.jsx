@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import AddModel from "../components/AddModel";
 import Alert from "../components/Alert";
 import EditModel from "../components/EditModel";
+import { AttentionSeeker, Fade } from "react-awesome-reveal";
 
 export default function Users() {
   const [userData, setUserData] = useState([]);
@@ -67,13 +68,17 @@ export default function Users() {
   return (
     <div>
       <div className="flex justify-between max-w-[960px] mx-auto w-full mb-8 border-b pb-5">
+        <Fade direction="up">
         <h1 className="text-4xl font-bold">All User Records</h1>
+        </Fade>
+        <AttentionSeeker effect="pulse">
         <button
           className="bg-green-600 text-white px-5 py-2"
           onClick={() => setShowAddModel(true)}
         >
           Add New User
         </button>
+        </AttentionSeeker>
       </div>
 
       {addStatus && (
@@ -148,10 +153,12 @@ export default function Users() {
       </table>
 
       {showAddModel && (
+     
         <AddModel
           onClose={() => setShowAddModel(false)}
           addResult={handelAddResultStatus}
         />
+    
       )}
       {showEditModel && (
         <EditModel

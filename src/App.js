@@ -10,6 +10,9 @@ import NoPage from "./pages/NoPage";
 import Service from "./pages/Services";
 import Users from "./pages/Users";
 import NavBar from "./components/NavBar";
+import Products from "./pages/Products";
+import Shirt from "./pages/Shirt";
+import Jins from "./pages/Jins";
 
 function App() {
   return (
@@ -19,6 +22,11 @@ function App() {
         <Route path="/" element={ <Home/> } />
         <Route path="/about" element={ <About/> } />
         <Route path="/services" element={ <Service/> } />
+        <Route path="/products" element={<Products/>}>
+          <Route path="shirt" element={<Shirt/>}/>
+          <Route path="jins" element={<Jins/>}/>
+        </Route>
+        {/* <Route path="/products/shirt" element={<Shirt/>}/> */}
         <Route path="/users" element={<Users/>}/>
         <Route path="/*" element={ <NoPage/> } />
        </Routes>
