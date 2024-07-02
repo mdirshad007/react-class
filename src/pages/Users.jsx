@@ -4,80 +4,101 @@ import AddModel from "../components/AddModel";
 import Alert from "../components/Alert";
 import EditModel from "../components/EditModel";
 import { AttentionSeeker, Fade } from "react-awesome-reveal";
+import { Link } from 'react-router-dom';
+import Searchbar from "../components/Searchbar";
 
 export default function Users() {
   const [userData, setUserData] = useState([]);
+  const [filteredUserData, setFilteredUserData] = useState([]);
   const apiLink = "https://6654c2d73c1d3b6029374b42.mockapi.io/todo/users";
+
   const fetchData = (api) => {
     Axios.get(api)
       .then((response) => {
         setUserData(response.data);
+        setFilteredUserData(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
   };
+
   useEffect(() => {
     fetchData(apiLink);
   }, []);
 
   const [showAddModel, setShowAddModel] = useState(false);
-  const [showEditModel, setShowEditModel]=useState(false)
+  const [showEditModel, setShowEditModel] = useState(false);
   const [addStatus, setAddStatus] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState(false);
   const [editStatus, setEditStatus] = useState(false);
-  const handelAddResultStatus = (status) => {
+
+  const handleAddResultStatus = (status) => {
     setAddStatus(status);
-    
   };
+
   useEffect(() => {
     fetchData(apiLink);
     setTimeout(() => {
-        setDeleteStatus(false);
-      }, 1500);
-      setTimeout(() => {
-        setAddStatus(false);
-      }, 1500);
-      setTimeout(() => {
-        setEditStatus(false);
-      }, 1500);
-  }, [addStatus,deleteStatus,editStatus]);
+      setDeleteStatus(false);
+    }, 1500);
+    setTimeout(() => {
+      setAddStatus(false);
+    }, 1500);
+    setTimeout(() => {
+      setEditStatus(false);
+    }, 1500);
+  }, [addStatus, deleteStatus, editStatus]);
 
-  const handelDelete = (id) => {
+  const handleDelete = (id) => {
     Axios.delete(`https://6654c2d73c1d3b6029374b42.mockapi.io/todo/users/${id}`)
       .then(() => setDeleteStatus(true))
       .catch((error) => {
         console.log(error);
       });
   };
-  const handelEditResultStatus=(status)=>{
-    setEditStatus(status)
-  }
-  const handelEdit = (id,name,email,phone,city) => {
-    const userDetail={
-      "id":id,
-      "name":name,
-      "email":email,
-      "phone":phone,
-      "city":city,
-    }
-    localStorage.setItem("userDeatils",JSON.stringify(userDetail))
-   setShowEditModel(true)
+
+  const handleEditResultStatus = (status) => {
+    setEditStatus(status);
   };
+
+  const handleEdit = (id, name, email, phone, city) => {
+    const userDetail = {
+      id: id,
+      name: name,
+      email: email,
+      phone: phone,
+      city: city,
+    };
+    localStorage.setItem("userDetails", JSON.stringify(userDetail));
+    setShowEditModel(true);
+  };
+
+  const handleSearchValue = (value) => {
+    const data = userData.filter(item => item.name.toLowerCase().includes(value.toLowerCase()) || item.email.toLowerCase().includes(value.toLowerCase()) || item.phone.toLowerCase().includes(value.toLowerCase())||item.city.toLowerCase().includes(value.toLowerCase()));
+    setFilteredUserData(data);
+  };
+
+  useEffect(() => {
+    console.log(filteredUserData);
+  }, [filteredUserData]);
 
   return (
     <div>
+      <div className="max-w-[960px] mx-auto w-full mb-8">
+        <Searchbar searchValue={handleSearchValue} />
+      </div>
       <div className="flex justify-between max-w-[960px] mx-auto w-full mb-8 border-b pb-5">
         <Fade direction="up">
-        <h1 className="text-4xl font-bold">All User Records</h1>
+          <h1 className="text-4xl font-bold">All User Records</h1>
         </Fade>
         <AttentionSeeker effect="pulse">
-        <button
-          className="bg-green-600 text-white px-5 py-2"
-          onClick={() => setShowAddModel(true)}
-        >
-          Add New User
-        </button>
+          <button
+            className="bg-green-600 text-white px-5 py-2"
+            onClick={() => setShowAddModel(true)}
+          >
+            Add New User
+          </button>
         </AttentionSeeker>
       </div>
 
@@ -91,7 +112,7 @@ export default function Users() {
         </div>
       )}
 
-{deleteStatus && (
+      {deleteStatus && (
         <div className="max-w-[960px] mx-auto">
           <Alert
             msg="User is deleted"
@@ -122,16 +143,20 @@ export default function Users() {
           </tr>
         </thead>
         <tbody>
-          {userData.map((item, index) => (
+          {filteredUserData.map((item, index) => (
             <tr key={index}>
-              <td className="border-b px-4 py-4">{item.name}</td>
+              <td className="border-b px-4 py-4">
+                <Link to={`/users/${item.id}`}>{item.name}</Link>
+              </td>
               <td className="border-b px-4 py-4">{item.email}</td>
               <td className="border-b px-4 py-4">{item.phone}</td>
               <td className="border-b px-4 py-4">{item.city}</td>
               <td className="border-b px-4 py-4">
                 <button
                   className="bg-blue-700 text-white px-3 py-2"
-                  onClick={() => handelEdit(item.id,item.name,item.email,item.phone,item.city)}
+                  onClick={() =>
+                    handleEdit(item.id, item.name, item.email, item.phone, item.city)
+                  }
                 >
                   Edit
                 </button>
@@ -141,7 +166,7 @@ export default function Users() {
                   className="bg-red-600 text-white px-3 py-2"
                   onClick={() => {
                     window.confirm("Are you sure you want to delete?") &&
-                      handelDelete(item.id);
+                      handleDelete(item.id);
                   }}
                 >
                   Delete
@@ -153,17 +178,15 @@ export default function Users() {
       </table>
 
       {showAddModel && (
-     
         <AddModel
           onClose={() => setShowAddModel(false)}
-          addResult={handelAddResultStatus}
+          addResult={handleAddResultStatus}
         />
-    
       )}
       {showEditModel && (
         <EditModel
           onClose={() => setShowEditModel(false)}
-          editResult={handelEditResultStatus}
+          editResult={handleEditResultStatus}
         />
       )}
     </div>

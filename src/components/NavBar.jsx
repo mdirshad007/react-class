@@ -11,7 +11,7 @@ export default function NavBar() {
             <NavLink to={'/'}><li>Home</li></NavLink>
             <NavLink to={'/about'}><li>About</li></NavLink>
             <NavLink to={'/services'}><li>Services</li></NavLink>
-            <NavLink to={'products'}>Products</NavLink>
+            <NavLink to={'/products'}>Products</NavLink>
             <NavLink to={'/users'}>Users</NavLink>
         </ul>
         <Link to={'/about'}><button className='bg-green-600 text-white py-4 px-5'>About Us</button></Link>
